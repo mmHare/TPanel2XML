@@ -1,0 +1,8 @@
+2025-12-13 23:35:52.368 - Item not found\n2025-12-13 23:36:40.278 - Item not found\n2025-12-13 23:36:42.847 - Item not found\n2025-12-13 23:37:39.691 - Item not found
+2025-12-13 23:37:41.822 - Item not found
+2025-12-13 23:41:27.489: Item not found
+2025-12-13 23:49:05.523: TPanel2Xml.SaveXml: Access violation at address 004E597E in module 'TPanel2XML_Demo.exe'. Read of address 0000000C
+2025-12-14 00:01:45.292: TPanel2Xml: Element names dictionary was not assigned.
+2025-12-14 00:07:20.276: TPanel2Xml: Element names dictionary is empty.
+2025-12-14 00:08:06.061: TPanel2Xml: TPanel was not assigned.
+2025-12-14 00:10:38.796: TPanel2Xml: No name provided for root element

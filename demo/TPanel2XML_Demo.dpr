@@ -2,7 +2,7 @@
 
 uses
   Vcl.Forms,
-  PanelDemo in 'PanelDemo.pas' {FormDemo},
+  PanelDemoForm in 'PanelDemoForm.pas' {FormDemo},
   uPanel2XML in '..\src\uPanel2XML.pas';
 
 {$R *.res}
