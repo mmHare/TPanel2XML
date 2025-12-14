@@ -15,13 +15,16 @@ Tag property value of a component will be looked up in dictionary keys and corre
 
 ## Supported components
 
-| Component | Representing element                                                      | Component property |
-|-----------|---------------------------------------------------------------------------|--------------------|
-| TPanel    | Element node containing child nodes                                       | --- |
-| TEdit     | Element with text value                                                   | Text               |
-| TSpinEdit | Element with numeric text value                                           | Value              |
-| TComboBox | Element with value from ItemIndex                                         | ItemIndex          |
-| TCheckBox | Element with boolean (checked) value - can be in 1/0 or true/false format | Checked            |
+| Component   | Representing element                                                      | Component property |
+|-------------|---------------------------------------------------------------------------|--------------------|
+| TPanel      | Element node containing child nodes                                       | --- |
+| TGroupBox   | Element node like TPanel but cannot be used as main panel                 | --- |
+| TEdit       | Element with text value                                                   | Text |
+| TMemo       | Element with text value                                                   | Text(save)/Lines(load) |
+| TSpinEdit   | Element with numeric text value                                           | Value |
+| TComboBox   | Element with numeric value of ItemIndex                                   | ItemIndex |
+| TRadioGroup | Element with numeric value of ItemIndex                                   | ItemIndex |
+| TCheckBox   | Element with boolean (checked) value - can be in 1/0 or true/false format | Checked |
 
 ## Additional properties
 

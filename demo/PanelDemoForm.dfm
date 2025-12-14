@@ -167,7 +167,7 @@ object FormDemo: TFormDemo
         Margins.Right = 5
         Margins.Bottom = 5
         TabOrder = 1
-        Text = 'edtPassword1'
+        Text = 'pass1'
       end
       object edtServer1: TEdit
         Left = 120
@@ -191,7 +191,7 @@ object FormDemo: TFormDemo
         Margins.Right = 5
         Margins.Bottom = 5
         TabOrder = 3
-        Text = 'edtUser1'
+        Text = 'User 1'
       end
       object cmbDbType1: TComboBox
         Left = 120
@@ -325,7 +325,7 @@ object FormDemo: TFormDemo
         Margins.Right = 5
         Margins.Bottom = 5
         TabOrder = 1
-        Text = 'edtPassword1'
+        Text = 'pass2'
       end
       object edtServer2: TEdit
         Left = 120
@@ -337,7 +337,7 @@ object FormDemo: TFormDemo
         Margins.Right = 5
         Margins.Bottom = 5
         TabOrder = 2
-        Text = 'edtServer1'
+        Text = 'edtServer2'
       end
       object edtUser2: TEdit
         Left = 120
@@ -349,7 +349,7 @@ object FormDemo: TFormDemo
         Margins.Right = 5
         Margins.Bottom = 5
         TabOrder = 3
-        Text = 'edtUser1'
+        Text = 'User 2'
       end
       object cmbDbType2: TComboBox
         Left = 120
@@ -381,6 +381,47 @@ object FormDemo: TFormDemo
         Margins.Bottom = 5
         Caption = 'Active'
         TabOrder = 5
+      end
+    end
+    object grpbxGeneral: TGroupBox
+      Left = 24
+      Top = 414
+      Width = 853
+      Height = 158
+      Margins.Left = 5
+      Margins.Top = 5
+      Margins.Right = 5
+      Margins.Bottom = 5
+      Caption = 'General'
+      TabOrder = 2
+      object memoDescr: TMemo
+        Left = 22
+        Top = 48
+        Width = 229
+        Height = 85
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Lines.Strings = (
+          'Description')
+        TabOrder = 0
+      end
+      object rdgrpUseOption: TRadioGroup
+        Left = 575
+        Top = 24
+        Width = 230
+        Height = 121
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Caption = 'rdgrpUseOption'
+        Items.Strings = (
+          'Left'
+          'Right'
+          'Both')
+        TabOrder = 1
       end
     end
   end

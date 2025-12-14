@@ -20,7 +20,7 @@ type
       function GetFloat(Node: IXMLNode; const Name: string; Default: Double): Double;
       function GetBool(Node: IXMLNode; const Name: string; Default: Boolean): Boolean;
 
-      procedure GetOrderedList(ComponentList: TList<TControl>; APanel: TPanel);
+      procedure GetOrderedList(ComponentList: TList<TControl>; AControl: TWinControl);
       
       function ValidateData(AFileName: string): Boolean;
       
@@ -141,25 +141,26 @@ begin
   Result := Parent;
   if not FDictNodeNames.ContainsKey(AControl.Tag) then Exit; // ignore elements with no name assigned
 
-
-  // TPanel is treated as new section -> recursive node creation
-  if AControl is TPanel then begin
+  // Components treated as new section -> recursive node creation
+  if (AControl is TPanel) or
+     (AControl is TGroupBox)
+  then begin
     Result := Parent.AddChild(FDictNodeNames[AControl.Tag]);
 
     controlList := TList<TControl>.Create;
     try
       if FWithTabOrder then begin
         //sort with TabOrder
-        GetOrderedList(controlList, TPanel(AControl));
+        GetOrderedList(controlList, TWinControl(AControl));
 
         for var CtrlTmp in controlList do
           AddNodeFromComponent(Result, CtrlTmp);
       end
       else begin
         // order doesn't matter
-        for var I := 0 to TPanel(AControl).ControlCount - 1 do begin
-          if TPanel(AControl).Controls[I] is TLabel then Continue; // ignore labels
-          AddNodeFromComponent(Result, TPanel(AControl).Controls[I]);
+        for var I := 0 to TWinControl(AControl).ControlCount - 1 do begin
+          if TWinControl(AControl).Controls[I] is TLabel then Continue; // ignore labels
+          AddNodeFromComponent(Result, TWinControl(AControl).Controls[I]);
         end;
       end;
     finally
@@ -170,7 +171,9 @@ begin
   if (AControl is TEdit) or
      (AControl is TSpinEdit) or
      (AControl is TComboBox) or
-     (AControl is TCheckBox)
+     (AControl is TCheckBox) or
+     (AControl is TMemo) or
+     (AControl is TRadioGroup)
   then begin
     Result.AddChild(FDictNodeNames[AControl.Tag]).Text := GetValueAsString(AControl);
   end;
@@ -180,18 +183,24 @@ function TPanel2Xml.GetValueAsString(AControl: TControl): string;
 begin
   if AControl is TEdit then begin
     Result := TEdit(AControl).Text;
-  end else
+  end;
   if AControl is TSpinEdit then begin
     Result := FloatToStr(TSpinEdit(AControl).Value);
-  end else
+  end;
   if (AControl is TComboBox) then begin
     Result := IntToStr(TComboBox(AControl).ItemIndex);
-  end else
+  end;
   if (AControl is TCheckBox) then begin
     if TCheckBox(AControl).Checked then
       Result := IfThen(FBoolStrValue, 'true', '1')
     else
       Result := IfThen(FBoolStrValue, 'false', '0');
+  end;
+  if (AControl is TMemo) then begin
+    Result := TMemo(AControl).Text;  
+  end;
+  if (AControl is TRadioGroup) then begin
+    Result := IntToStr(TRadioGroup(AControl).ItemIndex);  
   end;
 end;
 
@@ -227,13 +236,15 @@ procedure TPanel2Xml.GetComponentValueFromNode(const Parent: IXMLNode; AControl:
 var
   Node: IXMLNode;
 begin
-  // TPanel is treated as child nodes container -> recursive get node
-  if AControl is TPanel then begin
-    for var I := 0 to TPanel(AControl).ControlCount - 1 do begin
-      if TPanel(AControl).Controls[I] is TLabel then Continue; // ignore labels
+  // Components treated as child nodes container -> recursive get node
+  if (AControl is TPanel)  or
+     (AControl is TGroupBox)
+  then begin
+    for var I := 0 to TWinControl(AControl).ControlCount - 1 do begin
+      if TWinControl(AControl).Controls[I] is TLabel then Continue; // ignore labels
       Node := GetChildByName(Parent, FDictNodeNames[AControl.Tag]);
       if Assigned(Node) then        
-        GetComponentValueFromNode(Node, TPanel(AControl).Controls[I]);
+        GetComponentValueFromNode(Node, TWinControl(AControl).Controls[I]);
     end;
   end;
 
@@ -250,13 +261,19 @@ begin
   if (AControl is TCheckBox) then begin
     TCheckBox(AControl).Checked := GetBool(Parent, FDictNodeNames[AControl.Tag], False);
   end;
+  if (AControl is TMemo) then begin
+    TMemo(AControl).Lines.Text := GetText(Parent, FDictNodeNames[AControl.Tag], '');
+  end;
+  if (AControl is TRadioGroup) then begin
+    TRadioGroup(AControl).ItemIndex := GetInt(Parent, FDictNodeNames[AControl.Tag], 0);  
+  end;
 end;
 
-procedure TPanel2Xml.GetOrderedList(ComponentList: TList<TControl>; APanel: TPanel);
+procedure TPanel2Xml.GetOrderedList(ComponentList: TList<TControl>; AControl: TWinControl);
 begin
   try
-    for var I := 0 to APanel.ControlCount - 1 do
-      ComponentList.Add(APanel.Controls[I]);
+    for var I := 0 to AControl.ControlCount - 1 do
+      ComponentList.Add(AControl.Controls[I]);
 
     ComponentList.Sort(
       TComparer<TControl>.Construct(
