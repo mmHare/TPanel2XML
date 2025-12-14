@@ -1,10 +1,8 @@
 # TPanel2XML
 
-A helper stand-alone (one file [uPanel2XML.pas](src/CHANGELOG.md)) class that parses VCL Components from TPanel as XML nodes structure. Can be used for faster development of forms that are linked to XML data, e.g. configuration window. Just put settings on panel and pass it to be saved as XML file.
-For example usage see Demo project.
+A helper stand-alone (one file `uPanel2XML.pas`) class that parses VCL Components from TPanel as XML nodes structure. Can be used for faster development of forms that are linked to XML data, e.g. configuration window. Just put settings on panel and pass it to be saved as XML file.
 
 ## Working principle
-
 TPanel2XML class accepts TPanel that will be treated as root element and owned components will become child nodes. Second required parameter is *<Integer, String>* Dictionary which will link node names to components.
 Tag property value of a component will be looked up in dictionary keys and corresponding value will be node name; node text is taken from component respective value.
 
