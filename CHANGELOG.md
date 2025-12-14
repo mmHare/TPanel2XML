@@ -1,5 +1,8 @@
 # Changelog
 
+## [2025-12-15]
+
+-- Load XML function.
 
 ## [2025-12-14]
 

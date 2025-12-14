@@ -41,9 +41,11 @@ type
     edtUser2: TEdit;
     cmbDbType2: TComboBox;
     chkActive2: TCheckBox;
+    btnLoad: TButton;
     procedure btnSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure btnLoadClick(Sender: TObject);
   private
     FDictMarkers: TDictionary<Integer, string>;
 
@@ -63,6 +65,29 @@ uses
   uPanel2XML, IOUtils;
 
 {$R *.dfm}
+
+procedure TFormDemo.btnLoadClick(Sender: TObject);
+var
+  Panel2Xml: TPanel2Xml;
+  logLine: string;
+begin
+// action for loading xml file
+  Panel2Xml := TPanel2Xml.Create(pnlMain, FDictMarkers);
+  try
+    try
+
+      Panel2Xml.LoadXml('panel.xml');
+    except
+      on E: Exception do
+      begin
+        logLine := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now) + ': ' + E.Message + sLineBreak;
+        TFile.AppendAllText('logs.txt', logLine);
+      end;
+    end;
+  finally
+    Panel2Xml.Free;
+  end;
+end;
 
 procedure TFormDemo.btnSaveClick(Sender: TObject);
 var

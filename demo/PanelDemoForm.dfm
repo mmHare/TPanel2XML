@@ -42,6 +42,19 @@ object FormDemo: TFormDemo
       TabOrder = 0
       OnClick = btnSaveClick
     end
+    object btnLoad: TButton
+      Left = 644
+      Top = 14
+      Width = 113
+      Height = 38
+      Margins.Left = 5
+      Margins.Top = 5
+      Margins.Right = 5
+      Margins.Bottom = 5
+      Caption = 'Load'
+      TabOrder = 1
+      OnClick = btnLoadClick
+    end
   end
   object pnlMain: TPanel
     Left = 0
