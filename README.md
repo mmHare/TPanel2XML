@@ -1,6 +1,6 @@
 # TPanel2XML
 
-A helper class that parses VCL Components from TPanel as XML nodes structure. Can be used for faster development of forms that are linked to XML data, e.g. configuration window. Just put settings on panel and pass it to be saved as XML file.
+A helper stand-alone class that parses VCL Components from TPanel as XML nodes structure. Can be used for faster development of forms that are linked to XML data, e.g. configuration window. Just put settings on panel and pass it to be saved as XML file.
 
 ## Working principle
 TPanel2XML class accepts TPanel that will be treated as root element and owned components will become child nodes. Second required parameter is <Integer, String> Dictionary which will link node names to components.
@@ -15,10 +15,10 @@ Tag property value of a component will be looked up in dictionary keys and corre
 
 ## Supported components
 
-| TPanel | Element node containing child nodes |
-| TEdit | Element with text value |
-| TSpinEdit | Element with numeric text value |
-| TComboBox | Element with value from ItemIndex |
+| TPanel    | Element node containing child nodes                                       |
+| TEdit     | Element with text value                                                   |
+| TSpinEdit | Element with numeric text value                                           |
+| TComboBox | Element with value from ItemIndex                                         |
 | TCheckBox | Element with boolean (checked) value - can be in 1/0 or true/false format |
 
 ## Additional properties
