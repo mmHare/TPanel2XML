@@ -8,7 +8,8 @@ uses
   Vcl.Samples.Spin;
 
 type
-  TXmlElementNames = (xmConfiguration, xmDatabase1, xmDatabase2, xmUsername, xmPassword, xmServer, xmPort);
+  TXmlElementNames = (xmConfiguration=1, xmDatabase1, xmDatabase2,
+                      xmActive, xmDbType, xmUsername, xmPassword, xmServer, xmPort);
 
   TFormDemo = class(TForm)
     pnlTop: TPanel;
@@ -23,15 +24,23 @@ type
     edtPassword1: TEdit;
     lblPassword1: TLabel;
     pnlDatabase1: TPanel;
+    lblDatabase1: TLabel;
+    cmbDbType1: TComboBox;
+    lblDbType1: TLabel;
+    chkActive1: TCheckBox;
     pnlDatabase2: TPanel;
     lblPassword2: TLabel;
-    lblPort2: TLabel;
+    Label2: TLabel;
     lblServer2: TLabel;
-    lblUserName: TLabel;
+    lblUser2: TLabel;
+    lblDatabase2: TLabel;
+    lblDbType2: TLabel;
     sePort2: TSpinEdit;
     edtPassword2: TEdit;
     edtServer2: TEdit;
     edtUser2: TEdit;
+    cmbDbType2: TComboBox;
+    chkActive2: TCheckBox;
     procedure btnSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -61,18 +70,20 @@ var
   logLine: string;
 begin
 // action for saving xml file
-//  Panel2Xml := TPanel2Xml.Create(pnlMain, FDictMarkers);
-
-  Panel2Xml := TPanel2Xml.Create(nil, nil);
-  Panel2Xml.AssignPanel(pnlMain);
-  Panel2Xml.AssignDictNodeNames(FDictMarkers);
-
+  Panel2Xml := TPanel2Xml.Create(pnlMain, FDictMarkers);
   try
     try
       Panel2Xml.WithTabOrder := True; // optional ordering param (default True)
+      Panel2Xml.BoolStrValue := True; // ckeckbox value format: False - 1/0; True - true/false (default False)
 
-      if Panel2Xml.SaveXml then ShowMessage('File saved.')
-                           else ShowMessage('File was not saved.');
+      {$ifdef debug}
+        Panel2Xml.SaveXml('panel.xml');
+      {$else}
+        if Panel2Xml.SaveXml('panel.xml') then
+          ShowMessage('File saved.')
+        else
+          ShowMessage('File was not saved.');
+      {$endif}
     except
       on E: Exception do
       begin
@@ -109,6 +120,8 @@ begin
   FDictMarkers.Add(Ord(xmConfiguration), 'CONFIGURATION');
   FDictMarkers.Add(Ord(xmDatabase1), 'DATABASE_1');
   FDictMarkers.Add(Ord(xmDatabase2), 'DATABASE_2');
+  FDictMarkers.Add(Ord(xmActive), 'ACTIVE');
+  FDictMarkers.Add(Ord(xmDbType), 'DB_TYPE');
   FDictMarkers.Add(Ord(xmUsername), 'USERNAME');
   FDictMarkers.Add(Ord(xmPassword), 'PASSWORD');
   FDictMarkers.Add(Ord(xmServer), 'SERVER');
@@ -122,17 +135,25 @@ begin
 
   {$region 'pnlDatabase1'}
     pnlDatabase1.Tag := Ord(xmDatabase1);
+    chkActive1.Tag   := Ord(xmActive);
+    cmbDbType1.Tag   := Ord(xmDbType);
     edtUser1.Tag     := Ord(xmUsername);
     edtPassword1.Tag := Ord(xmPassword);
     edtServer1.Tag   := Ord(xmServer);
     sePort1.Tag      := Ord(xmPort);
+
+    edtPassword1.PasswordChar := '*'; // TODO:
   {$endregion}
   {$region 'pnlDatabase2'}
     pnlDatabase2.Tag := Ord(xmDatabase2);
+    chkActive2.Tag   := Ord(xmActive);
+    cmbDbType2.Tag   := Ord(xmDbType);
     edtUser2.Tag     := Ord(xmUsername);
     edtPassword2.Tag := Ord(xmPassword);
     edtServer2.Tag   := Ord(xmServer);
     sePort2.Tag      := Ord(xmPort);
+
+    edtPassword2.PasswordChar := '*'; // TODO:
   {$endregion}
 end;
 
@@ -140,19 +161,23 @@ procedure TFormDemo.SetTabOrder;
 begin
   //(OPTIONAL) set order in which elements will be saved
   pnlDatabase1.TabOrder := 0;
-  {$region 'pnlDatabase1'}
-    edtUser1.TabOrder     := 1;
-    edtPassword1.TabOrder := 2;
-    edtServer1.TabOrder   := 3;
-    sePort1.TabOrder      := 4;
-  {$endregion}
-
   pnlDatabase2.TabOrder := 1;
+
+  {$region 'pnlDatabase1'}
+    chkActive1.TabOrder   := 1;
+    cmbDbType1.TabOrder   := 2;
+    edtUser1.TabOrder     := 3;
+    edtPassword1.TabOrder := 4;
+    edtServer1.TabOrder   := 5;
+    sePort1.TabOrder      := 6;
+  {$endregion}
   {$region 'pnlDatabase2'}
-    edtUser2.TabOrder     := 1;
-    edtPassword2.TabOrder := 2;
-    edtServer2.TabOrder   := 3;
-    sePort2.TabOrder      := 4;
+    chkActive2.TabOrder   := 1;
+    cmbDbType2.TabOrder   := 2;
+    edtUser2.TabOrder     := 3;
+    edtPassword2.TabOrder := 4;
+    edtServer2.TabOrder   := 5;
+    sePort2.TabOrder      := 6;
   {$endregion}
 end;
 

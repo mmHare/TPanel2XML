@@ -56,7 +56,7 @@ object FormDemo: TFormDemo
     TabOrder = 1
     object pnlDatabase1: TPanel
       Left = 0
-      Top = 22
+      Top = 10
       Width = 445
       Height = 394
       Margins.Left = 5
@@ -66,7 +66,7 @@ object FormDemo: TFormDemo
       TabOrder = 0
       object lblPassword1: TLabel
         Left = 35
-        Top = 99
+        Top = 178
         Width = 75
         Height = 25
         Margins.Left = 5
@@ -76,8 +76,8 @@ object FormDemo: TFormDemo
         Caption = 'Password'
       end
       object lblPort1: TLabel
-        Left = 60
-        Top = 219
+        Left = 63
+        Top = 271
         Width = 32
         Height = 25
         Margins.Left = 5
@@ -88,7 +88,7 @@ object FormDemo: TFormDemo
       end
       object lblServer1: TLabel
         Left = 46
-        Top = 163
+        Top = 224
         Width = 49
         Height = 25
         Margins.Left = 5
@@ -99,7 +99,7 @@ object FormDemo: TFormDemo
       end
       object lblUser1: TLabel
         Left = 60
-        Top = 51
+        Top = 135
         Width = 35
         Height = 25
         Margins.Left = 5
@@ -108,9 +108,31 @@ object FormDemo: TFormDemo
         Margins.Bottom = 5
         Caption = 'User'
       end
+      object lblDatabase1: TLabel
+        Left = 35
+        Top = 24
+        Width = 89
+        Height = 25
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Caption = 'Database 1'
+      end
+      object lblDbType1: TLabel
+        Left = 73
+        Top = 89
+        Width = 37
+        Height = 25
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Caption = 'Type'
+      end
       object sePort1: TSpinEdit
         Left = 120
-        Top = 216
+        Top = 268
         Width = 182
         Height = 36
         Margins.Left = 5
@@ -124,7 +146,7 @@ object FormDemo: TFormDemo
       end
       object edtPassword1: TEdit
         Left = 120
-        Top = 91
+        Top = 175
         Width = 182
         Height = 33
         Margins.Left = 5
@@ -136,7 +158,7 @@ object FormDemo: TFormDemo
       end
       object edtServer1: TEdit
         Left = 120
-        Top = 160
+        Top = 221
         Width = 182
         Height = 33
         Margins.Left = 5
@@ -148,7 +170,7 @@ object FormDemo: TFormDemo
       end
       object edtUser1: TEdit
         Left = 120
-        Top = 48
+        Top = 132
         Width = 182
         Height = 33
         Margins.Left = 5
@@ -158,10 +180,41 @@ object FormDemo: TFormDemo
         TabOrder = 3
         Text = 'edtUser1'
       end
+      object cmbDbType1: TComboBox
+        Left = 120
+        Top = 89
+        Width = 182
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Style = csDropDownList
+        ItemIndex = 0
+        TabOrder = 4
+        Text = 'MySQL'
+        Items.Strings = (
+          'MySQL'
+          'SQL Server'
+          'PostgreSQL'
+          'Firebird')
+      end
+      object chkActive1: TCheckBox
+        Left = 120
+        Top = 53
+        Width = 146
+        Height = 26
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Caption = 'Active'
+        TabOrder = 5
+      end
     end
     object pnlDatabase2: TPanel
-      Left = 480
-      Top = 22
+      Left = 455
+      Top = 10
       Width = 445
       Height = 394
       Margins.Left = 5
@@ -171,7 +224,7 @@ object FormDemo: TFormDemo
       TabOrder = 1
       object lblPassword2: TLabel
         Left = 35
-        Top = 99
+        Top = 178
         Width = 75
         Height = 25
         Margins.Left = 5
@@ -180,9 +233,9 @@ object FormDemo: TFormDemo
         Margins.Bottom = 5
         Caption = 'Password'
       end
-      object lblPort2: TLabel
-        Left = 60
-        Top = 219
+      object Label2: TLabel
+        Left = 63
+        Top = 271
         Width = 32
         Height = 25
         Margins.Left = 5
@@ -193,7 +246,7 @@ object FormDemo: TFormDemo
       end
       object lblServer2: TLabel
         Left = 46
-        Top = 163
+        Top = 224
         Width = 49
         Height = 25
         Margins.Left = 5
@@ -202,9 +255,9 @@ object FormDemo: TFormDemo
         Margins.Bottom = 5
         Caption = 'Server'
       end
-      object lblUserName: TLabel
+      object lblUser2: TLabel
         Left = 60
-        Top = 51
+        Top = 135
         Width = 35
         Height = 25
         Margins.Left = 5
@@ -213,9 +266,31 @@ object FormDemo: TFormDemo
         Margins.Bottom = 5
         Caption = 'User'
       end
+      object lblDatabase2: TLabel
+        Left = 35
+        Top = 24
+        Width = 89
+        Height = 25
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Caption = 'Database 2'
+      end
+      object lblDbType2: TLabel
+        Left = 73
+        Top = 89
+        Width = 37
+        Height = 25
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Caption = 'Type'
+      end
       object sePort2: TSpinEdit
         Left = 120
-        Top = 216
+        Top = 268
         Width = 182
         Height = 36
         Margins.Left = 5
@@ -229,7 +304,7 @@ object FormDemo: TFormDemo
       end
       object edtPassword2: TEdit
         Left = 120
-        Top = 91
+        Top = 175
         Width = 182
         Height = 33
         Margins.Left = 5
@@ -237,11 +312,11 @@ object FormDemo: TFormDemo
         Margins.Right = 5
         Margins.Bottom = 5
         TabOrder = 1
-        Text = 'Pass 2'
+        Text = 'edtPassword1'
       end
       object edtServer2: TEdit
         Left = 120
-        Top = 160
+        Top = 221
         Width = 182
         Height = 33
         Margins.Left = 5
@@ -249,11 +324,11 @@ object FormDemo: TFormDemo
         Margins.Right = 5
         Margins.Bottom = 5
         TabOrder = 2
-        Text = 'srv 2'
+        Text = 'edtServer1'
       end
       object edtUser2: TEdit
         Left = 120
-        Top = 48
+        Top = 132
         Width = 182
         Height = 33
         Margins.Left = 5
@@ -261,7 +336,38 @@ object FormDemo: TFormDemo
         Margins.Right = 5
         Margins.Bottom = 5
         TabOrder = 3
-        Text = 'User 2'
+        Text = 'edtUser1'
+      end
+      object cmbDbType2: TComboBox
+        Left = 120
+        Top = 89
+        Width = 182
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Style = csDropDownList
+        ItemIndex = 0
+        TabOrder = 4
+        Text = 'MySQL'
+        Items.Strings = (
+          'MySQL'
+          'SQL Server'
+          'PostgreSQL'
+          'Firebird')
+      end
+      object chkActive2: TCheckBox
+        Left = 120
+        Top = 53
+        Width = 146
+        Height = 26
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Caption = 'Active'
+        TabOrder = 5
       end
     end
   end
