@@ -53,6 +53,9 @@ type
   private
     FDictMarkers: TDictionary<Integer, string>;
 
+    function StringEncode(pText: string) : string;
+    function StringDecode(pText: string) : string;
+
     procedure SetDictMarkers;
     procedure SetTags;
     procedure SetTabOrder;
@@ -67,9 +70,20 @@ var
 implementation
 
 uses
-  uPanel2XML, IOUtils;
+  uPanel2XML, IOUtils, NetEncoding;
 
 {$R *.dfm}
+
+function XorCipher(const S: string; Key: Byte = $AA): string;
+var
+  I: Integer;
+begin
+  SetLength(Result, Length(S));
+  for I := 1 to Length(S) do
+    Result[I] := Char(Byte(S[I]) xor Key);
+end;
+
+{ TFormDemo }
 
 procedure TFormDemo.btnLoadClick(Sender: TObject);
 begin
@@ -87,6 +101,7 @@ begin
     try
       Panel2Xml.WithTabOrder := True; // optional ordering param (default True)
       Panel2Xml.BoolStrValue := True; // ckeckbox value format: False - 1/0; True - true/false (default False)
+      Panel2Xml.OnEncodeText := StringEncode;
 
       {$ifdef debug}
         Panel2Xml.SaveXml('panel.xml');
@@ -135,6 +150,8 @@ begin
   Panel2Xml := TPanel2Xml.Create(pnlMain, FDictMarkers);
   try
     try
+      Panel2Xml.OnDecodeText := StringDecode;
+
       Panel2Xml.LoadXml('panel.xml');
     except
       on E: Exception do
@@ -182,7 +199,7 @@ begin
     edtServer1.Tag   := Ord(xmServer);
     sePort1.Tag      := Ord(xmPort);
 
-    edtPassword1.PasswordChar := '*'; // TODO:
+    edtPassword1.PasswordChar := '*'; // if PasswordChar is set, TPanel2XmlManager will use assigned OnEncodeText, OnDecodeText functions for encryption
   {$endregion}
 
   {$region 'pnlDatabase2'}
@@ -194,13 +211,23 @@ begin
     edtServer2.Tag   := Ord(xmServer);
     sePort2.Tag      := Ord(xmPort);
 
-    edtPassword2.PasswordChar := '*'; // TODO:
+    edtPassword2.PasswordChar := '*';
   {$endregion}
 
   {$region 'grpbxGeneral'}
     memoDescr.Tag      := Ord(xmDescription);
     rdgrpUseOption.Tag := Ord(xmUseOption);
   {$endregion}
+end;
+
+function TFormDemo.StringDecode(pText: string): string;
+begin
+  Result := XorCipher(TNetEncoding.Base64.Decode(pText));
+end;
+
+function TFormDemo.StringEncode(pText: string): string;
+begin
+  Result := TNetEncoding.Base64.Encode(XorCipher(pText));
 end;
 
 procedure TFormDemo.SetTabOrder;

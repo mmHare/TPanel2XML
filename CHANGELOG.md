@@ -4,6 +4,7 @@
 
 -- Load XML function.
 -- Support for TGroupBox, TRadioGroup and TMemo.
+-- Encryption option for TEdits with set PasswordChar property.
 
 ## [2025-12-14]
 

@@ -4,7 +4,7 @@ interface
 
 uses
   Vcl.Controls, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Samples.Spin,
-  Generics.Collections, Generics.Defaults,
+  Generics.Collections, Generics.Defaults, SysUtils,
   Classes, Xml.XMLDoc, Xml.XMLIntf;
 
 type
@@ -31,6 +31,9 @@ type
       function GetChildByName(Parent: IXMLNode; const Name: string): IXMLNode;
 
     public
+      OnEncodeText: TFunc<string, string>;
+      OnDecodeText: TFunc<string, string>;
+
       property PanelComponent: TPanel read FPanel;
       property WithTabOrder: Boolean read FWithTabOrder write FWithTabOrder;
       property BoolStrValue: Boolean read FBoolStrValue write FBoolStrValue;
@@ -48,7 +51,7 @@ type
 implementation
 
 uses
-  SysUtils, StrUtils;
+  StrUtils;
 
 { TPanel2XmlManager }
 
@@ -183,6 +186,8 @@ function TPanel2Xml.GetValueAsString(AControl: TControl): string;
 begin
   if AControl is TEdit then begin
     Result := TEdit(AControl).Text;
+    if (TEdit(AControl).PasswordChar <> #0) and Assigned(OnEncodeText) then
+      Result := OnEncodeText(Result);
   end;
   if AControl is TSpinEdit then begin
     Result := FloatToStr(TSpinEdit(AControl).Value);
@@ -235,6 +240,7 @@ end;
 procedure TPanel2Xml.GetComponentValueFromNode(const Parent: IXMLNode; AControl: TControl);
 var
   Node: IXMLNode;
+  strTmp: string;
 begin
   // Components treated as child nodes container -> recursive get node
   if (AControl is TPanel)  or
@@ -250,7 +256,10 @@ begin
 
   // load values
   if (AControl is TEdit) then begin
-    TEdit(AControl).Text := GetText(Parent, FDictNodeNames[AControl.Tag], '');   
+    strTmp := GetText(Parent, FDictNodeNames[AControl.Tag], '');
+    if (TEdit(AControl).PasswordChar <> #0) and Assigned(OnDecodeText) then
+      strTmp := OnDecodeText(strTmp);
+    TEdit(AControl).Text := strTmp;
   end;
   if (AControl is TSpinEdit) then begin
     TSpinEdit(AControl).Value := GetInt(Parent, FDictNodeNames[AControl.Tag], 0);
