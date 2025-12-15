@@ -33,10 +33,14 @@ Tag property value of a component will be looked up in dictionary keys and corre
 - *BoolStrValue* - if *True*, boolean values will be saved as 'true/false'; if False - '1/0' (default *False*)
 - *WithTabOrder* - elements (within common panel parent) will be sorted with components TabOrder property and saved in ascending order; if False the order will be determined by application creation order (default *True*)
 - *OnEncodeText* and *OnDecodeText* (function(string):string) - if methods are assigned then TEdit components with not empty *PasswordChar* will be encoded/decoded using them
+- Custom save option - with *AddCustomComponentValue* components can be bound to explicitly defined value. Bound XML element will be saved with provided value instead of value from component itself. This can be used for overwriting values or bind not supported controls (e.g. TMaskEdit).
+- Custom read option - analogously, *AddToReadList* and *GetComponentValue* can be used for explicit read of bound XML elements. Add components to read list before loading XML and their respective XML values will be stored in a list instead of updating component value. Use *GetComponentValue* to read it and process it in a way you need it. This is also a way to handle not supported controls. Returned value is a string.
 
 ## Side notes
 
 If component has Tag value that is not in names dictionary it will be ignored. This can be used to exclude certain values from being saved but also it is important to set correct Tag numbers.
+Custom save option can be used with some dummy components for static text - like TLabel which doesn't have edit value (however TLabel doesn't have TabOrder property so it might break the ordering, so it is recommended to use components that have this property). Similarly custom read option can be used with dummy to read specific XML element, as well as exclude components from updating their values.
 Passwords in demo project are obfuscated, not encrypted. This is for demonstration purposes only.
+
 
 Code was written in Delphi 12 and might not be compatible with previous versions. I plan to check it against Delphi 10.3 in the future.

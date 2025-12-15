@@ -12,6 +12,8 @@ type
     private
       FPanel: TPanel;
       FDictNodeNames: TDictionary<Integer, string>;
+      FCustomComponents: TDictionary<string, string>;
+      FComponentValues: TDictionary<string, string>;
       FWithTabOrder: Boolean;
       FBoolStrValue: Boolean;
 
@@ -38,6 +40,13 @@ type
       property WithTabOrder: Boolean read FWithTabOrder write FWithTabOrder;
       property BoolStrValue: Boolean read FBoolStrValue write FBoolStrValue;
 
+      procedure AddCustomComponentValue(AComponent: TControl; AValue: string);
+      procedure RemoveCustomComponent(AComponent: TControl);
+
+      procedure AddToReadList(AComponent: TControl);
+      procedure RemoveFromReadList(AComponent: TControl);
+      function GetComponentValue(AComponent: TControl): string;
+
       procedure AssignPanel(APanel: TPanel);
       procedure AssignDictNodeNames(ADictNodeNames: TDictionary<Integer, string>);
 
@@ -53,7 +62,7 @@ implementation
 uses
   StrUtils;
 
-{ TPanel2XmlManager }
+{ TComponentXmlBuilder }
 
 procedure TComponentXmlBuilder.AssignDictNodeNames(ADictNodeNames: TDictionary<Integer, string>);
 begin
@@ -73,10 +82,15 @@ begin
   FDictNodeNames := ADictNodeNames;
   FWithTabOrder := True;
   FBoolStrValue := False;
+  FCustomComponents := TDictionary<string, string>.Create;
+  FComponentValues := TDictionary<string, string>.Create;
 end;
 
 destructor TComponentXmlBuilder.Destroy;
 begin
+  FreeAndNil(FCustomComponents);
+  FreeAndNil(FComponentValues);
+
   inherited;
 end;
 
@@ -129,7 +143,7 @@ begin
       Result := True;
     except
       on E: Exception do begin
-        raise Exception.CreateFmt('TPanel2Xml: %s', [E.Message]);
+        raise Exception.CreateFmt('%s: %s', [Self.ClassName, E.Message]);
       end;
     end;
   finally
@@ -145,9 +159,7 @@ begin
   if not FDictNodeNames.ContainsKey(AControl.Tag) then Exit; // ignore elements with no name assigned
 
   // Components treated as new section -> recursive node creation
-  if (AControl is TPanel) or
-     (AControl is TGroupBox)
-  then begin
+  if (AControl is TPanel) or (AControl is TGroupBox) then begin
     Result := Parent.AddChild(FDictNodeNames[AControl.Tag]);
 
     controlList := TList<TControl>.Create;
@@ -161,14 +173,16 @@ begin
       end
       else begin
         // order doesn't matter
-        for var I := 0 to TWinControl(AControl).ControlCount - 1 do begin
-          if TWinControl(AControl).Controls[I] is TLabel then Continue; // ignore labels
+        for var I := 0 to TWinControl(AControl).ControlCount - 1 do
           AddNodeFromComponent(Result, TWinControl(AControl).Controls[I]);
-        end;
       end;
     finally
       controlList.Free;
     end;
+  end else
+  if FCustomComponents.ContainsKey(AControl.Name) then begin
+    // custom set components
+    Result.AddChild(FDictNodeNames[AControl.Tag]).Text := FCustomComponents[AControl.Name];
   end else
   // save values of supported components
   if (AControl is TEdit) or
@@ -232,7 +246,7 @@ begin
     Result := True
   except
     on E: Exception do begin
-      raise Exception.CreateFmt('TPanel2Xml: %s', [E.Message]);
+      raise Exception.CreateFmt('%s: %s', [Self.ClassName, E.Message]);
     end;
   end;
 end;
@@ -242,39 +256,42 @@ var
   Node: IXMLNode;
   strTmp: string;
 begin
+  if not FDictNodeNames.ContainsKey(AControl.Tag) then Exit; // ignore elements with no name assigned
+
   // Components treated as child nodes container -> recursive get node
-  if (AControl is TPanel)  or
-     (AControl is TGroupBox)
-  then begin
+  if (AControl is TPanel)  or (AControl is TGroupBox) then begin
     for var I := 0 to TWinControl(AControl).ControlCount - 1 do begin
-      if TWinControl(AControl).Controls[I] is TLabel then Continue; // ignore labels
       Node := GetChildByName(Parent, FDictNodeNames[AControl.Tag]);
       if Assigned(Node) then        
         GetComponentValueFromNode(Node, TWinControl(AControl).Controls[I]);
     end;
-  end;
-
+  end else
+  // load custom list
+  if FComponentValues.ContainsKey(AControl.Name) then begin
+    strTmp := GetText(Parent, FDictNodeNames[AControl.Tag], '');
+    FComponentValues.AddOrSetValue(AControl.Name, strTmp);
+  end else
   // load values
   if (AControl is TEdit) then begin
     strTmp := GetText(Parent, FDictNodeNames[AControl.Tag], '');
     if (TEdit(AControl).PasswordChar <> #0) and Assigned(OnDecodeText) then
       strTmp := OnDecodeText(strTmp);
     TEdit(AControl).Text := strTmp;
-  end;
+  end else
   if (AControl is TSpinEdit) then begin
     TSpinEdit(AControl).Value := GetInt(Parent, FDictNodeNames[AControl.Tag], 0);
-  end;
+  end else
   if (AControl is TComboBox) then begin
     TComboBox(AControl).ItemIndex := GetInt(Parent, FDictNodeNames[AControl.Tag], 0);
-  end;
+  end else
   if (AControl is TCheckBox) then begin
     TCheckBox(AControl).Checked := GetBool(Parent, FDictNodeNames[AControl.Tag], False);
-  end;
+  end else
   if (AControl is TMemo) then begin
     TMemo(AControl).Lines.Text := GetText(Parent, FDictNodeNames[AControl.Tag], '');
-  end;
+  end else
   if (AControl is TRadioGroup) then begin
-    TRadioGroup(AControl).ItemIndex := GetInt(Parent, FDictNodeNames[AControl.Tag], 0);  
+    TRadioGroup(AControl).ItemIndex := GetInt(Parent, FDictNodeNames[AControl.Tag], 0);
   end;
 end;
 
@@ -347,6 +364,54 @@ begin
     Result := Child.Text.ToBoolean
   else
     Result := Default;
+end;
+
+procedure TComponentXmlBuilder.AddCustomComponentValue(AComponent: TControl; AValue: string);
+begin
+  try
+    FCustomComponents.AddOrSetValue(AComponent.Name, AValue);
+  except
+    on E: Exception do raise Exception.CreateFmt('%s: %s', [Self.ClassName, E.Message]);
+  end;
+end;
+
+procedure TComponentXmlBuilder.RemoveCustomComponent(AComponent: TControl);
+begin
+  try
+    FCustomComponents.Remove(AComponent.Name);
+  except
+    on E: Exception do raise Exception.CreateFmt('%s: %s', [Self.ClassName, E.Message]);
+  end;
+end;
+
+function TComponentXmlBuilder.GetComponentValue(AComponent: TControl): string;
+begin
+  try
+    if FComponentValues.ContainsKey(AComponent.Name) then
+      Result := FComponentValues[AComponent.Name]
+    else
+      Result := '';
+  except
+    on E: Exception do raise Exception.CreateFmt('%s: %s', [Self.ClassName, E.Message]);
+  end;
+end;
+
+procedure TComponentXmlBuilder.AddToReadList(AComponent: TControl);
+begin
+  try
+    FComponentValues.AddOrSetValue(AComponent.Name, '');
+  except
+    on E: Exception do raise Exception.CreateFmt('%s: %s', [Self.ClassName, E.Message]);
+  end;
+end;
+
+procedure TComponentXmlBuilder.RemoveFromReadList(AComponent: TControl);
+begin
+  try
+    FComponentValues.Remove(AComponent.Name);
+  except
+    on E: Exception do raise Exception.CreateFmt('%s: %s', [Self.ClassName, E.Message]);
+  end;
 end;
 
 end.

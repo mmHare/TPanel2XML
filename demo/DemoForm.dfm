@@ -423,6 +423,30 @@ object FormDemo: TFormDemo
           'Both')
         TabOrder = 1
       end
+      object chkDefDescr: TCheckBox
+        Left = 261
+        Top = 48
+        Width = 196
+        Height = 26
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        Caption = 'Default description'
+        TabOrder = 2
+      end
+      object medtCustom: TMaskEdit
+        Left = 275
+        Top = 96
+        Width = 182
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 5
+        TabOrder = 3
+        Text = 'medtCustom'
+      end
     end
   end
 end

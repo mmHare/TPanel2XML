@@ -5,12 +5,12 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Generics.Collections,
-  Vcl.Samples.Spin, Vcl.CheckLst;
+  Vcl.Samples.Spin, Vcl.CheckLst, Vcl.Mask;
 
 type
   TXmlElementNames = (xmConfiguration=1, xmDatabase1, xmDatabase2, xmGeneral,
                       xmActive, xmDbType, xmUsername, xmPassword, xmServer, xmPort,
-                      xmDescription, xmUseOption);
+                      xmDescription, xmUseOption, xmCustomText, xmLabel);
 
   TFormDemo = class(TForm)
     pnlTop: TPanel;
@@ -46,6 +46,8 @@ type
     grpbxGeneral: TGroupBox;
     memoDescr: TMemo;
     rdgrpUseOption: TRadioGroup;
+    chkDefDescr: TCheckBox;
+    medtCustom: TMaskEdit;
     procedure btnSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -103,6 +105,15 @@ begin
       XmlBuilder.BoolStrValue := True; // ckeckbox value format: False - 1/0; True - true/false (default False)
       XmlBuilder.OnEncodeText := StringEncode;
 
+      // component custom value save (Text instead of ItemIndex)
+      XmlBuilder.AddCustomComponentValue(cmbDbType2, cmbDbType2.Text);
+      XmlBuilder.AddCustomComponentValue(medtCustom, medtCustom.Text); // TMaskEdit is not supported but can be custom saved
+
+      if chkDefDescr.Checked then
+        XmlBuilder.AddCustomComponentValue(memoDescr, 'This is default description.'); // overwrite value
+
+      XmlBuilder.AddCustomComponentValue(lblDatabase1, 'Static text'); // use dummy component for static text
+
       {$ifdef debug}
         XmlBuilder.SaveXml('panel.xml');
       {$else}
@@ -144,15 +155,25 @@ end;
 procedure TFormDemo.LoadConfig;
 var
   XmlBuilder: TComponentXmlBuilder;
-  logLine: string;
+  logLine, sValue: string;
 begin
 // action for loading xml file
   XmlBuilder := TComponentXmlBuilder.Create(pnlMain, FDictMarkers);
   try
     try
       XmlBuilder.OnDecodeText := StringDecode;
+      XmlBuilder.AddToReadList(cmbDbType2); // add controls which values should be put into readlist instead of loading to component itself
+      XmlBuilder.AddToReadList(medtCustom); // TMaskEdit is not supported so it will not be loaded until read explicitly
+      XmlBuilder.AddToReadList(lblDatabase1); // dummy component
 
       XmlBuilder.LoadXml('panel.xml');
+
+      // components on custom list will not be updated with read values, their values need to be get individually
+      // returned value is always a string
+      sValue := XmlBuilder.GetComponentValue(cmbDbType2);
+      sValue := sValue + ' : ' + XmlBuilder.GetComponentValue(lblDatabase1);
+      memoDescr.Text := sValue;
+      medtCustom.Text := XmlBuilder.GetComponentValue(medtCustom);
     except
       on E: Exception do
       begin
@@ -182,6 +203,8 @@ begin
   FDictMarkers.Add(Ord(xmPort), 'PORT');
   FDictMarkers.Add(Ord(xmDescription), 'DESCRIPTION');
   FDictMarkers.Add(Ord(xmUseOption), 'USE_OPTION');
+  FDictMarkers.Add(Ord(xmCustomText), 'CUSTOM_TEXT');
+  FDictMarkers.Add(Ord(xmLabel), 'LABEL');
 end;
 
 procedure TFormDemo.SetTags;
@@ -205,7 +228,7 @@ begin
   {$region 'pnlDatabase2'}
     pnlDatabase2.Tag := Ord(xmDatabase2);
     chkActive2.Tag   := Ord(xmActive);
-    cmbDbType2.Tag   := Ord(xmDbType);
+    cmbDbType2.Tag   := Ord(xmDbType);  // this control will be custom saved but still needs binding with element name
     edtUser2.Tag     := Ord(xmUsername);
     edtPassword2.Tag := Ord(xmPassword);
     edtServer2.Tag   := Ord(xmServer);
@@ -217,7 +240,12 @@ begin
   {$region 'grpbxGeneral'}
     memoDescr.Tag      := Ord(xmDescription);
     rdgrpUseOption.Tag := Ord(xmUseOption);
+    medtCustom.Tag     := Ord(xmCustomText); // TMaskEdit is not supported but can be custom saved
+
+    chkDefDescr.Tag := -1; // -1 is not in FDictMarkers so the control will not be saved
   {$endregion}
+
+  lblDatabase1.Tag := Ord(xmLabel); // TLabel has no edit value but can be used with custom save as dummy for static text
 end;
 
 function TFormDemo.StringDecode(pText: string): string;
@@ -258,7 +286,11 @@ begin
   {$region 'grpbxGeneral'}
     memoDescr.TabOrder      := 0;
     rdgrpUseOption.TabOrder := 1;
+    medtCustom.TabOrder     := 2;
   {$endregion}
+
+  // lblDatabase1 - TLabel has no TabOrder property so it will not be ordered
+  // if ordering is needed, use components with TabOrder
 end;
 
 end.

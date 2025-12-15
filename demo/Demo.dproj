@@ -125,7 +125,6 @@
         </DelphiCompile>
         <DCCReference Include="DemoForm.pas">
             <Form>FormDemo</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\src\uComponentXmlBuilder.pas"/>
         <BuildConfiguration Include="Base">

@@ -2,7 +2,11 @@
 
 ## [2025-12-15]
 
-## Changed
+### Added
+
+- Custom save and custom load options
+
+### Changed
 
 - Project and repository rename
 
