@@ -1,4 +1,4 @@
-﻿unit uPanel2XML;
+﻿unit uComponentXmlBuilder;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   Classes, Xml.XMLDoc, Xml.XMLIntf;
 
 type
-  TPanel2Xml = class
+  TComponentXmlBuilder = class
     private
       FPanel: TPanel;
       FDictNodeNames: TDictionary<Integer, string>;
@@ -55,17 +55,17 @@ uses
 
 { TPanel2XmlManager }
 
-procedure TPanel2Xml.AssignDictNodeNames(ADictNodeNames: TDictionary<Integer, string>);
+procedure TComponentXmlBuilder.AssignDictNodeNames(ADictNodeNames: TDictionary<Integer, string>);
 begin
   FDictNodeNames := ADictNodeNames;
 end;
 
-procedure TPanel2Xml.AssignPanel(APanel: TPanel);
+procedure TComponentXmlBuilder.AssignPanel(APanel: TPanel);
 begin
   FPanel := APanel;
 end;
 
-constructor TPanel2Xml.Create(APanel: TPanel; ADictNodeNames: TDictionary<Integer, string>);
+constructor TComponentXmlBuilder.Create(APanel: TPanel; ADictNodeNames: TDictionary<Integer, string>);
 begin
   inherited Create;
 
@@ -75,12 +75,12 @@ begin
   FBoolStrValue := False;
 end;
 
-destructor TPanel2Xml.Destroy;
+destructor TComponentXmlBuilder.Destroy;
 begin
   inherited;
 end;
 
-function TPanel2Xml.ValidateData(AFileName: string): Boolean;
+function TComponentXmlBuilder.ValidateData(AFileName: string): Boolean;
 begin
   if AFileName = '' then
      raise Exception.Create('No file path provided.');
@@ -93,7 +93,7 @@ begin
   Result := True;
 end;
 
-function TPanel2Xml.SaveXml(AFileName: string): Boolean;
+function TComponentXmlBuilder.SaveXml(AFileName: string): Boolean;
 var
   XmlDoc: IXMLDocument;
   pnlNode: IXMLNode;
@@ -137,7 +137,7 @@ begin
   end;
 end;
 
-function TPanel2Xml.AddNodeFromComponent(const Parent: IXMLNode; AControl: TControl): IXMLNode;
+function TComponentXmlBuilder.AddNodeFromComponent(const Parent: IXMLNode; AControl: TControl): IXMLNode;
 var
   controlList: TList<TControl>;
 begin
@@ -182,7 +182,7 @@ begin
   end;
 end;
 
-function TPanel2Xml.GetValueAsString(AControl: TControl): string;
+function TComponentXmlBuilder.GetValueAsString(AControl: TControl): string;
 begin
   if AControl is TEdit then begin
     Result := TEdit(AControl).Text;
@@ -209,7 +209,7 @@ begin
   end;
 end;
 
-function TPanel2Xml.LoadXml(AFileName: string): Boolean;
+function TComponentXmlBuilder.LoadXml(AFileName: string): Boolean;
 var
   XmlDoc: IXMLDocument;
   RootNode: IXMLNode;
@@ -237,7 +237,7 @@ begin
   end;
 end;
 
-procedure TPanel2Xml.GetComponentValueFromNode(const Parent: IXMLNode; AControl: TControl);
+procedure TComponentXmlBuilder.GetComponentValueFromNode(const Parent: IXMLNode; AControl: TControl);
 var
   Node: IXMLNode;
   strTmp: string;
@@ -278,7 +278,7 @@ begin
   end;
 end;
 
-procedure TPanel2Xml.GetOrderedList(ComponentList: TList<TControl>; AControl: TWinControl);
+procedure TComponentXmlBuilder.GetOrderedList(ComponentList: TList<TControl>; AControl: TWinControl);
 begin
   try
     for var I := 0 to AControl.ControlCount - 1 do
@@ -297,7 +297,7 @@ begin
   end;
 end;
 
-function TPanel2Xml.GetChildByName(Parent: IXMLNode; const Name: string): IXMLNode;
+function TComponentXmlBuilder.GetChildByName(Parent: IXMLNode; const Name: string): IXMLNode;
 begin
   Result := nil;
   for var I := 0 to Parent.ChildNodes.Count - 1 do
@@ -305,7 +305,7 @@ begin
       Exit(Parent.ChildNodes[I]);
 end;
 
-function TPanel2Xml.GetFloat(Node: IXMLNode; const Name: string; Default: Double): Double;
+function TComponentXmlBuilder.GetFloat(Node: IXMLNode; const Name: string; Default: Double): Double;
 var
   Child: IXMLNode;
 begin
@@ -316,7 +316,7 @@ begin
     Result := Default;
 end;
 
-function TPanel2Xml.GetInt(Node: IXMLNode; const Name: string; Default: Integer): Integer;
+function TComponentXmlBuilder.GetInt(Node: IXMLNode; const Name: string; Default: Integer): Integer;
 var
   Child: IXMLNode;
 begin
@@ -327,7 +327,7 @@ begin
     Result := Default;
 end;
 
-function TPanel2Xml.GetText(Node: IXMLNode; const Name: string; Default: string): string;
+function TComponentXmlBuilder.GetText(Node: IXMLNode; const Name: string; Default: string): string;
 var
   Child: IXMLNode;
 begin
@@ -338,7 +338,7 @@ begin
     Result := Default;
 end;
 
-function TPanel2Xml.GetBool(Node: IXMLNode; const Name: string; Default: Boolean): Boolean;
+function TComponentXmlBuilder.GetBool(Node: IXMLNode; const Name: string; Default: Boolean): Boolean;
 var
   Child: IXMLNode;
 begin

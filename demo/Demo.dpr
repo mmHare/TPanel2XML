@@ -1,9 +1,9 @@
-﻿program TPanel2XML_Demo;
+﻿program Demo;
 
 uses
   Vcl.Forms,
-  PanelDemoForm in 'PanelDemoForm.pas' {FormDemo},
-  uPanel2XML in '..\src\uPanel2XML.pas';
+  DemoForm in 'DemoForm.pas' {FormDemo},
+  uComponentXmlBuilder in '..\src\uComponentXmlBuilder.pas';
 
 {$R *.res}
 

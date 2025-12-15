@@ -1,4 +1,4 @@
-﻿unit PanelDemoForm;
+﻿unit DemoForm;
 
 interface
 
@@ -70,7 +70,7 @@ var
 implementation
 
 uses
-  uPanel2XML, IOUtils, NetEncoding;
+  uComponentXmlBuilder, IOUtils, NetEncoding;
 
 {$R *.dfm}
 
@@ -92,21 +92,21 @@ end;
 
 procedure TFormDemo.btnSaveClick(Sender: TObject);
 var
-  Panel2Xml: TPanel2Xml;
+  XmlBuilder: TComponentXmlBuilder;
   logLine: string;
 begin
 // action for saving xml file
-  Panel2Xml := TPanel2Xml.Create(pnlMain, FDictMarkers);
+  XmlBuilder := TComponentXmlBuilder.Create(pnlMain, FDictMarkers);
   try
     try
-      Panel2Xml.WithTabOrder := True; // optional ordering param (default True)
-      Panel2Xml.BoolStrValue := True; // ckeckbox value format: False - 1/0; True - true/false (default False)
-      Panel2Xml.OnEncodeText := StringEncode;
+      XmlBuilder.WithTabOrder := True; // optional ordering param (default True)
+      XmlBuilder.BoolStrValue := True; // ckeckbox value format: False - 1/0; True - true/false (default False)
+      XmlBuilder.OnEncodeText := StringEncode;
 
       {$ifdef debug}
-        Panel2Xml.SaveXml('panel.xml');
+        XmlBuilder.SaveXml('panel.xml');
       {$else}
-        if Panel2Xml.SaveXml('panel.xml') then
+        if XmlBuilder.SaveXml('panel.xml') then
           ShowMessage('File saved.')
         else
           ShowMessage('File was not saved.');
@@ -120,7 +120,7 @@ begin
       end;
     end;
   finally
-    Panel2Xml.Free;
+    XmlBuilder.Free;
   end;
 end;
 
@@ -143,16 +143,16 @@ end;
 
 procedure TFormDemo.LoadConfig;
 var
-  Panel2Xml: TPanel2Xml;
+  XmlBuilder: TComponentXmlBuilder;
   logLine: string;
 begin
 // action for loading xml file
-  Panel2Xml := TPanel2Xml.Create(pnlMain, FDictMarkers);
+  XmlBuilder := TComponentXmlBuilder.Create(pnlMain, FDictMarkers);
   try
     try
-      Panel2Xml.OnDecodeText := StringDecode;
+      XmlBuilder.OnDecodeText := StringDecode;
 
-      Panel2Xml.LoadXml('panel.xml');
+      XmlBuilder.LoadXml('panel.xml');
     except
       on E: Exception do
       begin
@@ -161,7 +161,7 @@ begin
       end;
     end;
   finally
-    Panel2Xml.Free;
+    XmlBuilder.Free;
   end;
 end;
 
