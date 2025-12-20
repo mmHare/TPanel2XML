@@ -48,6 +48,8 @@ type
     rdgrpUseOption: TRadioGroup;
     chkDefDescr: TCheckBox;
     medtCustom: TMaskEdit;
+    cmbSaveOption: TComboBox;
+    Label1: TLabel;
     procedure btnSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -62,6 +64,9 @@ type
     procedure SetTags;
     procedure SetTabOrder;
     procedure LoadConfig;
+
+    procedure SaveXmlWithNamesOption;
+    procedure SaveXmlWithTagOption;
   public
     { Public declarations }
   end;
@@ -93,45 +98,10 @@ begin
 end;
 
 procedure TFormDemo.btnSaveClick(Sender: TObject);
-var
-  XmlBuilder: TComponentXmlBuilder;
-  logLine: string;
 begin
-// action for saving xml file
-  XmlBuilder := TComponentXmlBuilder.Create(pnlMain, FDictMarkers);
-  try
-    try
-      XmlBuilder.WithTabOrder := True; // optional ordering param (default True)
-      XmlBuilder.BoolStrValue := True; // ckeckbox value format: False - 1/0; True - true/false (default False)
-      XmlBuilder.OnEncodeText := StringEncode;
-
-      // component custom value save (Text instead of ItemIndex)
-      XmlBuilder.AddCustomComponentValue(cmbDbType2, cmbDbType2.Text);
-      XmlBuilder.AddCustomComponentValue(medtCustom, medtCustom.Text); // TMaskEdit is not supported but can be custom saved
-
-      if chkDefDescr.Checked then
-        XmlBuilder.AddCustomComponentValue(memoDescr, 'This is default description.'); // overwrite value
-
-      XmlBuilder.AddCustomComponentValue(lblDatabase1, 'Static text'); // use dummy component for static text
-
-      {$ifdef debug}
-        XmlBuilder.SaveXml('panel.xml');
-      {$else}
-        if XmlBuilder.SaveXml('panel.xml') then
-          ShowMessage('File saved.')
-        else
-          ShowMessage('File was not saved.');
-      {$endif}
-    except
-      on E: Exception do
-      begin
-        ShowMessage('Error occurred while saving the file.');
-        logLine := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now) + ': ' + E.Message + sLineBreak;
-        TFile.AppendAllText('logs.txt', logLine);
-      end;
-    end;
-  finally
-    XmlBuilder.Free;
+  case cmbSaveOption.ItemIndex of
+    0: SaveXmlWithNamesOption;
+    1: SaveXmlWithTagOption;
   end;
 end;
 
@@ -158,7 +128,7 @@ var
   logLine, sValue: string;
 begin
 // action for loading xml file
-  XmlBuilder := TComponentXmlBuilder.Create(pnlMain, FDictMarkers);
+  XmlBuilder := TComponentXmlBuilder.CreateWithTags(pnlMain, FDictMarkers);
   try
     try
       XmlBuilder.OnDecodeText := StringDecode;
@@ -169,14 +139,124 @@ begin
       XmlBuilder.LoadXml('panel.xml');
 
       // components on custom list will not be updated with read values, their values need to be get individually
-      // returned value is always a string
-      sValue := XmlBuilder.GetComponentValue(cmbDbType2);
+      sValue := XmlBuilder.GetComponentValue(cmbDbType2);  // returned value is always a string
       sValue := sValue + ' : ' + XmlBuilder.GetComponentValue(lblDatabase1);
       memoDescr.Text := sValue;
       medtCustom.Text := XmlBuilder.GetComponentValue(medtCustom);
     except
       on E: Exception do
       begin
+        logLine := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now) + ': ' + E.Message + sLineBreak;
+        TFile.AppendAllText('logs.txt', logLine);
+      end;
+    end;
+  finally
+    XmlBuilder.Free;
+  end;
+end;
+
+procedure TFormDemo.SaveXmlWithNamesOption;
+var
+  XmlBuilder: TComponentXmlBuilder;
+  logLine: string;
+begin
+// action for saving xml file
+  XmlBuilder := TComponentXmlBuilder.Create(pnlMain);
+  try
+    try
+      XmlBuilder.WithTabOrder := True; // optional ordering param (default True)
+      XmlBuilder.BoolStrValue := False; // ckeckbox value format: False - 1/0; True - true/false (default False)
+      XmlBuilder.OnEncodeText := StringEncode;  // assign function to be used in encrypting password edits (if Edit's PasswordChar <> #0)
+
+      // prepare binding list
+      XmlBuilder.AddComponentBind(pnlMain, 'CONFIGURATION');
+      XmlBuilder.AddComponentBind(grpbxGeneral, 'GENERAL');
+
+      {$region 'pnlDatabase1'}
+        XmlBuilder.AddComponentBind(pnlDatabase1, 'DATABASE_1');
+        XmlBuilder.AddComponentBind(chkActive1, 'ACTIVE');
+        XmlBuilder.AddComponentBind(cmbDbType1, 'DB_TYPE');
+        XmlBuilder.AddComponentBind(edtUser1, 'USERNAME');
+        XmlBuilder.AddComponentBind(edtPassword1, 'PASSWORD');
+        XmlBuilder.AddComponentBind(edtServer1, 'SERVER');
+        XmlBuilder.AddComponentBind(sePort1, 'PORT');
+
+        edtPassword1.PasswordChar := '*'; // if PasswordChar is set, TPanel2XmlManager will use assigned OnEncodeText, OnDecodeText functions for encryption
+      {$endregion}
+
+      {$region 'pnlDatabase2'}
+        XmlBuilder.AddComponentBind(pnlDatabase2, 'DATABASE_2');
+        XmlBuilder.AddComponentBind(chkActive2, 'ACTIVE');
+        XmlBuilder.AddComponentBind(cmbDbType2, 'DB_TYPE');
+        XmlBuilder.AddComponentBind(edtUser2, 'USERNAME');
+        XmlBuilder.AddComponentBind(edtPassword2, 'PASSWORD');
+        XmlBuilder.AddComponentBind(edtServer2, 'SERVER');
+        XmlBuilder.AddComponentBind(sePort2, 'PORT');
+
+        edtPassword2.PasswordChar := '*'; // if PasswordChar is set, TPanel2XmlManager will use assigned OnEncodeText, OnDecodeText functions for encryption
+      {$endregion}
+
+       {$region 'grpbxGeneral'}
+         XmlBuilder.AddComponentBind(memoDescr, 'DESCRIPTION');
+         XmlBuilder.AddComponentBind(rdgrpUseOption, 'USE_OPTION');
+         XmlBuilder.AddComponentBind(medtCustom, 'CUSTOM_TEXT');
+//         XmlBuilder.AddComponentBind(chkDefDescr, ''); // if component is not added, it will be ommitted
+      {$endregion}
+
+
+
+      // component custom value save (Text instead of ItemIndex)
+      XmlBuilder.AddCustomComponentValue(cmbDbType2, cmbDbType2.Text);
+      XmlBuilder.AddCustomComponentValue(medtCustom, medtCustom.Text); // TMaskEdit is not supported but can be custom saved
+
+      if chkDefDescr.Checked then
+        XmlBuilder.AddCustomComponentValue(memoDescr, 'This is default description.'); // overwrite value
+
+
+      XmlBuilder.AddComponentBind(lblDatabase1, 'LABEL');   // TLabel has no edit value but can be used with custom save as dummy for static text
+      XmlBuilder.AddCustomComponentValue(lblDatabase1, 'Static text'); // use dummy component for static text
+
+      XmlBuilder.SaveXml('panel.xml');
+    except
+      on E: Exception do
+      begin
+        ShowMessage('Error occurred while saving the file.');
+        logLine := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now) + ': ' + E.Message + sLineBreak;
+        TFile.AppendAllText('logs.txt', logLine);
+      end;
+    end;
+  finally
+    XmlBuilder.Free;
+  end;
+end;
+
+procedure TFormDemo.SaveXmlWithTagOption;
+var
+  XmlBuilder: TComponentXmlBuilder;
+  logLine: string;
+begin
+// action for saving xml file
+  XmlBuilder := TComponentXmlBuilder.CreateWithTags(pnlMain, FDictMarkers);
+  try
+    try
+      XmlBuilder.WithTabOrder := True; // optional ordering param (default True)
+      XmlBuilder.BoolStrValue := True; // ckeckbox value format: False - 1/0; True - true/false (default False)
+      XmlBuilder.OnEncodeText := StringEncode;
+
+      // component custom value save (Text instead of ItemIndex)
+      XmlBuilder.AddCustomComponentValue(cmbDbType2, cmbDbType2.Text);
+      XmlBuilder.AddCustomComponentValue(medtCustom, medtCustom.Text); // TMaskEdit is not supported but can be custom saved
+
+      if chkDefDescr.Checked then
+        XmlBuilder.AddCustomComponentValue(memoDescr, 'This is default description.'); // overwrite value
+
+      XmlBuilder.AddCustomComponentValue(lblDatabase1, 'Static text'); // use dummy component for static text
+
+      XmlBuilder.SaveXml('panel.xml');
+    except
+      on E: Exception do
+      begin
+        ShowMessage('Error occurred while saving the file.');
         logLine := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now) + ': ' + E.Message + sLineBreak;
         TFile.AppendAllText('logs.txt', logLine);
       end;

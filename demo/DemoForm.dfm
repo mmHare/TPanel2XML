@@ -29,6 +29,17 @@ object FormDemo: TFormDemo
     Margins.Bottom = 5
     Align = alTop
     TabOrder = 0
+    object Label1: TLabel
+      Left = 180
+      Top = 18
+      Width = 95
+      Height = 25
+      Margins.Left = 5
+      Margins.Top = 5
+      Margins.Right = 5
+      Margins.Bottom = 5
+      Caption = 'Save option'
+    end
     object btnSave: TButton
       Left = 792
       Top = 14
@@ -54,6 +65,23 @@ object FormDemo: TFormDemo
       Caption = 'Load'
       TabOrder = 1
       OnClick = btnLoadClick
+    end
+    object cmbSaveOption: TComboBox
+      Left = 285
+      Top = 15
+      Width = 244
+      Height = 33
+      Margins.Left = 5
+      Margins.Top = 5
+      Margins.Right = 5
+      Margins.Bottom = 5
+      Style = csDropDownList
+      ItemIndex = 0
+      TabOrder = 2
+      Text = 'Use component names'
+      Items.Strings = (
+        'Use component names'
+        'Use component tags')
     end
   end
   object pnlMain: TPanel

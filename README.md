@@ -5,14 +5,24 @@ It is designed for configuration forms, allowing UI controls placed on a contain
 
 ## Working principle
 
-TComponentXmlBuilder class accepts TPanel that will be treated as root element and owned components will become child nodes. Second required parameter is *<Component.Tag Integer, ELEMENT_NAME string>* Dictionary which will link node names to components.
-Tag property value of a component will be looked up in dictionary keys and corresponding value will be node name; node text is taken from component respective value.
+TComponentXmlBuilder class accepts TPanel that will be treated as root element and owned components will become child nodes. The builder will loop through all contained controls saving those bound to XML elements. Node text is taken from component respective value (see the table below). There are two ways for binding components to node names (each is defined by different class constructor):
+
+A) Binding XML element with component __Name__ property. Uses Create constructor expecting only root panel. Components shall be added by *AddComponentBind* and provided with node name. Loop will look for component names in the structure.
+
+1. Create root panel, put components or group them with other panels.
+2. Create TComponentXmlBuilder object and pass root panel component.
+3. Add components with *AddComponentBind* (also panels, including the root one).
+4. (Optional) Set Tab order for components. 
+5. Change additional options if needed.
+6. Save/load XML file.
+
+B) Binding XML element component __Tag__ property. Constructor *CreateWithTags* requires *<Component.Tag Integer, ELEMENT_NAME string>* Dictionary that will be used for mapping, link node names to components. Tag property value of a component will be looked up in dictionary keys and corresponding value will be node name.
 
 1. Create root panel, put components or group them with other panels.
 2. Define node name dictionary.
 3. Assign components (also panels, including the root one).
 4. (Optional) Set Tab order for components.
-5. Create TComponentXmlBuilder object, pass root panel component and node name dictionary. Change additional options if needed.
+5. Create TComponentXmlBuilder object, pass root panel component and mapping dictionary. Change additional options if needed.
 6. Save/load XML file.
 
 ## Supported components
@@ -38,9 +48,9 @@ Tag property value of a component will be looked up in dictionary keys and corre
 
 ## Side notes
 
-If component has Tag value that is not in names dictionary it will be ignored. This can be used to exclude certain values from being saved but also it is important to set correct Tag numbers.
-Custom save option can be used with some dummy components for static text - like TLabel which doesn't have edit value (however TLabel doesn't have TabOrder property so it might break the ordering, so it is recommended to use components that have this property). Similarly custom read option can be used with dummy to read specific XML element, as well as exclude components from updating their values.
-Passwords in demo project are obfuscated, not encrypted. This is for demonstration purposes only.
+- If component has Tag value that is not in names dictionary it will be ignored. This can be used to exclude certain values from being saved but also it is important to set correct Tag numbers.
+- TPanel that is not bound to node name will be ignored (including owned components).
+- Custom save option can be used with some dummy components for static text - like TLabel which doesn't have edit value (however TLabel doesn't have TabOrder property so it might break the ordering, so it is recommended to use components that have this property). Similarly custom read option can be used with dummy to read specific XML element, as well as exclude components from updating their values.
+- Passwords in demo project are obfuscated, not encrypted. This is for demonstration purposes only.
 
-
-Code was written in Delphi 12 and might not be compatible with previous versions. I plan to check it against Delphi 10.3 in the future.
+- Code was written in Delphi 12 and might not be compatible with previous versions. I plan to check it against Delphi 10.3 in the future.

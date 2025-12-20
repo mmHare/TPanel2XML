@@ -1,5 +1,18 @@
 # Changelog
 
+## [2025-12-20]
+
+### Added
+
+- Second option for binding components with XML node names.
+- Two different class constructors:
+	`CreateWithTags(APanel: TPanel; ADictNodeNames: TDictionary<Integer, string>);` - TComponentXmlBuilder will use previously introduced component Tag mapping
+	`Create(APanel: TPanel);` - will depend on component's Name property
+
+### Changed
+
+- *AddCustomComponentValue* now accepts value as Variant instead of String only
+
 ## [2025-12-15]
 
 ### Added
