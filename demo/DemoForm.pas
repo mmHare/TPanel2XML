@@ -114,6 +114,8 @@ begin
   SetTags;
   SetTabOrder;
 
+
+
   LoadConfig;
 end;
 
@@ -187,7 +189,7 @@ begin
       {$region 'pnlDatabase2'}
         XmlBuilder.AddComponentBind(pnlDatabase2, 'DATABASE_2');
         XmlBuilder.AddComponentBind(chkActive2, 'ACTIVE');
-        XmlBuilder.AddComponentBind(cmbDbType2, 'DB_TYPE');
+        XmlBuilder.AddComponentBind(cmbDbType2, 'DB_TYPE', cmbDbType2.Text); // works like combine with AddCustomComponentValue
         XmlBuilder.AddComponentBind(edtUser2, 'USERNAME');
         XmlBuilder.AddComponentBind(edtPassword2, 'PASSWORD');
         XmlBuilder.AddComponentBind(edtServer2, 'SERVER');
@@ -196,25 +198,24 @@ begin
         edtPassword2.PasswordChar := '*'; // if PasswordChar is set, TPanel2XmlManager will use assigned OnEncodeText, OnDecodeText functions for encryption
       {$endregion}
 
-       {$region 'grpbxGeneral'}
-         XmlBuilder.AddComponentBind(memoDescr, 'DESCRIPTION');
-         XmlBuilder.AddComponentBind(rdgrpUseOption, 'USE_OPTION');
-         XmlBuilder.AddComponentBind(medtCustom, 'CUSTOM_TEXT');
-//         XmlBuilder.AddComponentBind(chkDefDescr, ''); // if component is not added, it will be ommitted
+      {$region 'grpbxGeneral'}
+        XmlBuilder.AddComponentBind(memoDescr, 'DESCRIPTION');
+        if chkDefDescr.Checked then
+          XmlBuilder.AddCustomComponentValue(memoDescr, 'This is default description.'); // overwrite value
+
+        XmlBuilder.AddComponentBind(rdgrpUseOption, 'USE_OPTION');
+        XmlBuilder.AddComponentBind(medtCustom, 'CUSTOM_TEXT', medtCustom.Text); // works like combine with AddCustomComponentValue
+//        XmlBuilder.AddComponentBind(chkDefDescr, ''); // if component is not added, it will be ommitted
       {$endregion}
 
 
-
       // component custom value save (Text instead of ItemIndex)
-      XmlBuilder.AddCustomComponentValue(cmbDbType2, cmbDbType2.Text);
-      XmlBuilder.AddCustomComponentValue(medtCustom, medtCustom.Text); // TMaskEdit is not supported but can be custom saved
-
-      if chkDefDescr.Checked then
-        XmlBuilder.AddCustomComponentValue(memoDescr, 'This is default description.'); // overwrite value
+//      XmlBuilder.AddCustomComponentValue(cmbDbType2, cmbDbType2.Text);
+//      XmlBuilder.AddCustomComponentValue(medtCustom, medtCustom.Text); // TMaskEdit is not supported but can be custom saved
 
 
-      XmlBuilder.AddComponentBind(lblDatabase1, 'LABEL');   // TLabel has no edit value but can be used with custom save as dummy for static text
-      XmlBuilder.AddCustomComponentValue(lblDatabase1, 'Static text'); // use dummy component for static text
+      XmlBuilder.AddComponentBind(lblDatabase1, 'LABEL', 'Static text');   // TLabel has no edit value but can be used with custom save as dummy for static text
+//      XmlBuilder.AddCustomComponentValue(lblDatabase1, 'Static text'); // use dummy component for static text
 
       XmlBuilder.SaveXml('panel.xml');
     except

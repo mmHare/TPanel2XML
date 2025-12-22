@@ -45,7 +45,8 @@ type
       property WithTabOrder: Boolean read FWithTabOrder write FWithTabOrder;
       property BoolStrValue: Boolean read FBoolStrValue write FBoolStrValue;
 
-      procedure AddComponentBind(AComponent: TControl; ANodeName: string);
+      procedure AddComponentBind(AComponent: TControl; ANodeName: string); overload;
+      procedure AddComponentBind(AComponent: TControl; ANodeName: string; AValue: Variant); overload; // bind name and custom value
       procedure RemoveComponentBind(AComponent: TControl);
 
       procedure AddCustomComponentValue(AComponent: TControl; AValue: Variant);
@@ -411,6 +412,12 @@ begin
     Result := Child.Text.ToBoolean
   else
     Result := Default;
+end;
+
+procedure TComponentXmlBuilder.AddComponentBind(AComponent: TControl; ANodeName: string; AValue: Variant);
+begin
+  AddComponentBind(AComponent, ANodeName);
+  AddCustomComponentValue(AComponent, AValue);
 end;
 
 procedure TComponentXmlBuilder.AddCustomComponentValue(AComponent: TControl; AValue: Variant);
